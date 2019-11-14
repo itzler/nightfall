@@ -29,3 +29,7 @@ This file explains some of the considerations necessary to deploy Nightfall on a
    1. Create a web page (should NOT be part of Nightfall, to discuss) to document how to download keys, install locally and connect to this Nightfall instance
    2. Discuss policies for that server instance
    3. As current, the NFTokenMetadata contract is deployed which allows anybody to mint tokens. I don't see a problem with this for production uses
+
+## References
+
+* Zcash issues with key deployment https://github.com/zcash/zcash/issues/2695
