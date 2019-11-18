@@ -14,6 +14,8 @@ This file explains some of the considerations necessary to deploy Nightfall on a
    3. SHA hash the keys (included in the ASCII session)
    4. End ASCII Cinema session
    5. (From outside the session) secure copy (scp) the keys out, 7 GB
+   
+Much more elaborate trusted setup ceremonies can provide additional protection and assurance against backdoors. Such ceremonies are currently outside the scope of this document.
 
 ## Key distribution
 
