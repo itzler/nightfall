@@ -5,7 +5,6 @@
 */
 
 import config from 'config';
-import zkp from './nf-token-zkp';
 import utils from './zkpUtils';
 
 /**
@@ -73,7 +72,7 @@ export async function computePath(account, shieldContract, _myToken, myTokenInde
   const { MERKLE_DEPTH } = config;
 
   // get the relevant token data from the contract
-  let leaf = await zkp.getMerkleNode(account, shieldContract, leafIndex);
+  let leaf = await shieldContract.merkleTree.call(leafIndex, { from: account });
   leaf = utils.strip0x(leaf);
   if (leaf === myTokenTruncated) {
     console.log(
@@ -108,7 +107,8 @@ export async function computePath(account, shieldContract, _myToken, myTokenInde
       sisterSide = '1'; // conversly if p is odd then the sister will be on the right. Encode this as 1
     }
 
-    nodeHash = zkp.getMerkleNode(account, shieldContract, s0);
+    // eslint-disable-next-line no-await-in-loop
+    nodeHash = await shieldContract.merkleTree.call(s0, { from: account });
     s[r] = {
       merkleIndex: s0,
       nodeHashOld: nodeHash,
@@ -119,7 +119,7 @@ export async function computePath(account, shieldContract, _myToken, myTokenInde
   }
 
   // separate case for the root:
-  nodeHash = zkp.getLatestRoot(shieldContract);
+  nodeHash = shieldContract.latestRoot();
   s[0] = {
     merkleIndex: 0,
     nodeHashOld: nodeHash,

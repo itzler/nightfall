@@ -13,7 +13,6 @@ import jsonfile from 'jsonfile';
 // eslint-disable-next-line import/extensions
 import zokrates from '@eyblockchain/zokrates.js';
 import fs from 'fs';
-import zkp from './f-token-zkp';
 import { computeVectors, computePath, checkRoot } from './compute-vectors';
 import Element from './Element';
 
@@ -896,13 +895,32 @@ async function burn(
   return { z_C: commitment, z_C_index: commitmentIndex };
 }
 
-async function checkCorrectness(C, pk, S, z, zIndex, account) {
-  const fTokenShieldInstance = shield[account] ? shield[account] : await FTokenShield.deployed();
+async function checkCorrectness(value, publicKey, salt, commitment, account) {
+  const fTokenShield = shield[account] ? shield[account] : await FTokenShield.deployed();
 
-  const results = await zkp.checkCorrectness(C, pk, S, z, zIndex, fTokenShieldInstance);
-  console.log('\nf-token-controller', '\ncheckCorrectness', '\nresults', results);
+  console.log('Checking h(A|pk|S) = z...');
+  const zCheck = utils.zeroMSB(
+    utils.concatenateThenHash(value, utils.zeroMSB(publicKey), utils.zeroMSB(salt)),
+  );
+  const zCorrect = zCheck === commitment;
+  console.log('z:', commitment);
+  console.log('zCheck:', zCheck);
 
-  return results;
+  console.log('Checking z exists on-chain...');
+  const zOnchain = await fTokenShield.commitments.call(commitment, {}); // lookup the nfTokenShield commitment mapping - we hope to find our new z here!
+  const zOnchainCorrect = zOnchain === commitment;
+  console.log('z:', commitment);
+  console.log('zOnchain:', zOnchain);
+
+  console.log('\nf-token-controller', '\ncheckCorrectness', '\nresults', {
+    zOnchain,
+    zOnchainCorrect,
+  });
+
+  return {
+    zCorrect,
+    zOnchainCorrect,
+  };
 }
 
 export default {

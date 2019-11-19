@@ -14,7 +14,6 @@ import config from 'config';
 import zokrates from '@eyblockchain/zokrates.js';
 import fs from 'fs';
 import utils from './zkpUtils';
-import zkp from './nf-token-zkp';
 import { computeVectors, computePath } from './compute-vectors';
 import Element from './Element';
 import Web3 from './web3';
@@ -657,13 +656,34 @@ async function burn(
   return commitment;
 }
 
-async function checkCorrectness(A, pk, S, z, zIndex, account) {
+async function checkCorrectness(tokenId, ownerPublicKey, salt, commitment, account) {
   const nfTokenShield = shield[account] ? shield[account] : await NFTokenShield.deployed();
 
-  const results = await zkp.checkCorrectness(A, pk, S, z, zIndex, nfTokenShield);
-  console.log('\nnf-token-controller', '\ncheckCorrectness', '\nresults', results);
+  console.log('Checking h(A|pk|S) = z...');
+  const zCheck = utils.concatenateThenHash(
+    utils.strip0x(tokenId).slice(-(config.INPUTS_HASHLENGTH * 2)),
+    ownerPublicKey,
+    salt,
+  );
+  const z_correct = zCheck === commitment; // eslint-disable-line camelcase
+  console.log('z:', commitment);
+  console.log('zCheck:', zCheck);
 
-  return results;
+  console.log('Checking z exists on-chain...');
+  const zOnchain = await nfTokenShield.commitments.call(commitment, {}); // lookup the nfTokenShield commitment mapping - we hope to find our new z here!
+  const z_onchain_correct = zOnchain === commitment; // eslint-disable-line camelcase
+  console.log('z:', commitment);
+  console.log('zOnchain:', zOnchain);
+
+  console.log('\nnf-token-controller', '\ncheckCorrectness', '\nresults', {
+    z_correct,
+    z_onchain_correct,
+  });
+
+  return {
+    z_correct,
+    z_onchain_correct,
+  };
 }
 
 export default {

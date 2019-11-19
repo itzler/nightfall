@@ -170,20 +170,13 @@ async function checkCorrectness(req, res, next) {
 
   try {
     const { address } = req.headers;
-    const {
-      E: value,
-      pk: publicKey,
-      S_E: salt,
-      z_E: commitment,
-      z_E_index: commitmentIndex,
-    } = req.body;
+    const { E: value, pk: publicKey, S_E: salt, z_E: commitment } = req.body;
 
     const results = await fTokenController.checkCorrectness(
       value,
       publicKey,
       salt,
       commitment,
-      commitmentIndex,
       address,
     );
     console.log('\nzkp/src/restapi', '\n/coin/checkCorrectness', '\nresults', results);

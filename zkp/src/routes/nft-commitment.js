@@ -140,20 +140,13 @@ async function checkCorrectness(req, res, next) {
 
   try {
     const { address } = req.headers;
-    const {
-      A: tokenId,
-      pk: ownerPublicKey,
-      S_A: salt,
-      z_A: commitment,
-      z_A_index: commitmentIndex,
-    } = req.body;
+    const { A: tokenId, pk: ownerPublicKey, S_A: salt, z_A: commitment } = req.body;
 
     const results = await nfController.checkCorrectness(
       tokenId,
       ownerPublicKey,
       salt,
       commitment,
-      commitmentIndex,
       address,
     );
     res.data = results;
