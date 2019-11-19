@@ -252,6 +252,6 @@ async function main() {
 
 // RUN
 main().catch(err => {
-   console.log(err);
-   process.exit(1);
- });
+  console.log(err);
+  process.exit(1);
+});
