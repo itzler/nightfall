@@ -61,7 +61,7 @@ do
       exit
       ;;
     [Nn]* ) printf "\nType the number of each trusted setup seperated by a comma\n"
-      read -p '(E.g. type "1,2" to run the trusted setups for ft-mint & nft-mint) : ' selectedSetupsIndexes
+      read -p "(E.g. type "1,2" to run the trusted setups for ${setups[0]} & ${setups[1]}) : " selectedSetupsIndexes
       generateSetups
       exit
       ;;
