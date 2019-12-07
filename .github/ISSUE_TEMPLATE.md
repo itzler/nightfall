@@ -1,6 +1,6 @@
 <!--- Hello,-->
 
-<!--- please note that this is an issue tracker reserved for bug reports and feature requests. -->
+<!--- please note that this is an issue tracker reserved for bug reports and feature requests -->
 
 # Description
 
